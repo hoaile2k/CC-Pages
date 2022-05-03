@@ -32,24 +32,32 @@ window.__require = function e(t, n, r) {
     cc.Class({
       extends: cc.Component,
       properties: {
-        _scaleBlack: 3,
-        _defaultX: 0
+        _defaultX: 0,
+        _scaleTo: 3
       },
       start: function start() {
         cc.log("Hello");
         this._defaultX = this.node.x;
         this._defaultY = this.node.y;
-        var actionMove = [ cc.scaleTo(1, 3), cc.moveBy(2, cc.v2({
-          x: 100,
-          y: 0
-        })), cc.flipX(true), cc.moveBy(2, cc.v2({
-          x: -100,
-          y: 0
-        })) ];
         this.moveTo = this.node.x;
-        this.node.runAction(cc.sequence(actionMove));
       },
-      update: function update(dt) {}
+      update: function update(dt) {
+        if (this.node.scaleY < this._scaleTo) {
+          this.node.scaleX += .05;
+          this.node.scaleY += .05;
+        }
+        if (this.node.scale >= this._scaleTo && this.moveTo < this._defaultX + 100) {
+          this.node.x++;
+          this.moveTo++;
+          if (this.node.x == this._defaultX + 100) {
+            this.moveBack = this._defaultX + 100;
+            this.node.scaleX = -3;
+          }
+        }
+        if (!(this.moveBack > this._defaultX)) return;
+        this.moveBack--;
+        this.node.x--;
+      }
     });
     cc._RF.pop();
   }, {} ],
@@ -59,16 +67,20 @@ window.__require = function e(t, n, r) {
     "use strict";
     cc.Class({
       extends: cc.Component,
-      properties: {},
+      properties: {
+        getGrayBunny: {
+          default: null,
+          type: cc.Component
+        }
+      },
       start: function start() {
         this.defaultLocation = this.node.x;
-        this.parentNode = this.node.parent;
         cc.log("Hello!!!");
         cc.log("Im Brownie");
       },
       update: function update(dt) {
         if (this.node.x == this.defaultLocation + 100) {
-          this.parentNode.children[2].active = true;
+          this.getGrayBunny.node.active = true;
           return;
         }
         this.node.angle -= 7;
@@ -84,6 +96,10 @@ window.__require = function e(t, n, r) {
     cc.Class({
       extends: cc.Component,
       properties: {
+        getBlackBunny: {
+          default: null,
+          type: cc.Component
+        },
         _defaultLocationY: 0
       },
       start: function start() {
@@ -91,12 +107,11 @@ window.__require = function e(t, n, r) {
         this.jump = 0;
         this.count = 0;
         this.tempCount = 0;
-        this.parentNode = this.node.parent;
         cc.log("Hmmm!!!");
       },
       update: function update(dt) {
         if (!(this.count < 3)) {
-          this.parentNode.children[3].active = true;
+          this.getBlackBunny.node.active = true;
           return;
         }
         if (this.node.y < this._defaultLocationY + 50 && this.jump < 50) {
@@ -120,7 +135,12 @@ window.__require = function e(t, n, r) {
     "use strict";
     cc.Class({
       extends: cc.Component,
-      properties: {},
+      properties: {
+        getBrownBunny: {
+          default: null,
+          type: cc.Component
+        }
+      },
       start: function start() {
         this.defaultLocation = this.node.x;
         cc.log("Hello");
@@ -128,7 +148,7 @@ window.__require = function e(t, n, r) {
       },
       update: function update(dt) {
         if (this.node.x == this.defaultLocation + 100) {
-          this.parentNode.children[1].active = true;
+          this.getBrownBunny.node.active = true;
           return;
         }
         this.node.x += 1;
